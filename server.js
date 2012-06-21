@@ -1,8 +1,52 @@
 var spdy = require('spdy'),
     http = require('http'),
+    path = require('path'),
     url = require('url'),
     net = require('net'),
     fs = require('fs');
+
+var opts = require('optimist')
+    .usage('Usage: $0 -x - y')
+    .options({
+      key: {
+        demand: true,
+        alias: 'k',
+        description: 'path to SSL key'
+      },
+      cert: {
+        demand: true,
+        alias: 'c',
+        description: 'path to SSL certificate'
+      },
+      ca: {
+        demand: true,
+        alias: 'a',
+        description: 'path to SSL CA certificate'
+      },
+      port: {
+        demand: false,
+        alias: 'p',
+        description: 'proxy port',
+        default: 44300
+      },
+      user: {
+        demand: false,
+        alias: 'u',
+        description: 'basich auth username'
+      },
+      pass: {
+        demand: false,
+        alias: 'p',
+        description: 'basic auth password'
+      }
+    })
+    .argv;
+
+opts.key = fs.readFileSync(path.resolve(opts.key));
+opts.cert = fs.readFileSync(path.resolve(opts.cert));
+opts.ca = fs.readFileSync(path.resolve(opts.ca));
+
+
 
 process.on('uncaughtException', function(e) {
   console.error('Error: ' + e);
@@ -103,13 +147,7 @@ function handleRequest(req, res) {
   }
 }
 
-var serverOptions = {
-  key: fs.readFileSync(__dirname + '/keys/mykey.pem'),
-  cert: fs.readFileSync(__dirname + '/keys/mycert.pem'),
-  ca: fs.readFileSync(__dirname + '/keys/mycsr.pem')
-};
-
-var server = spdy.createServer(serverOptions);
+var server = spdy.createServer(opts);
 
 server.on("request", handleRequest);
 server.on("connect", handleRequest);
