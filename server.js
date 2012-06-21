@@ -22,24 +22,17 @@ function handlePlain(req, res) {
     port: req.headers.host.split(':')[1] || 80,
     path: req.url,
     method: req.method,
-    // headers: req.headers
+    headers: req.headers // TODO: remove, host, method, etc?
   };
-
-  // console.log(req.url)
-  // console.log(uri)
-  console.log(requestOptions);
 
   var rreq = http.request(requestOptions, function(rres) {
     delete rres.headers['transfer-encoding'];
     rres.headers['x-spdy-proxy'] = 'v1.0.0';
 
-    console.log(rres.headers)
-
+    // write out headers to handle redirects
     res.writeHead(rres.statusCode, '', rres.headers);
     rres.pipe(res);
   });
-
-  rreq.setNoDelay(true);
 
   rreq.on('error', function(e) {
     console.log("Client error: " + e.message);
@@ -54,7 +47,6 @@ function handleSecure(req, socket) {
   logRequest(req);
 
   var dest = req.headers.host.split(':');
-  console.log(dest)
   var tunnel = net.createConnection(dest[1] || 443, dest[0], function() {
     socket.lock(function() {
       var socket = this;
