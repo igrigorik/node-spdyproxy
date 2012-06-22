@@ -31,12 +31,12 @@ var path = require('path')
       },
       user: {
         demand: false,
-        alias: 'u',
-        description: 'basich auth username'
+        alias: 'U',
+        description: 'basic auth username'
       },
       pass: {
         demand: false,
-        alias: 'p',
+        alias: 'P',
         description: 'basic auth password'
       }
     }).argv;
