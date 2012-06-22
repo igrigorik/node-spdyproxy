@@ -1,11 +1,11 @@
 {
-  "name": "spdy-vpn",
-  "description": "SPDY proxy",
+  "name": "SPDY-Proxy",
+  "description": "Fast, secure forward proxy: secure connection to proxy and ability to tunnel HTTP, HTTPS, and SPDY.",
   "version": "0.1.0",
   "author": "Ilya Grigorik <ilya@igvita.com> (igvita.com)",
   "keywords": ["spdy", "proxy", "vpn", "chrome"],
-  "repository": "git://github.com/igrigorik/spdy-vpn",
-  "homepage": "https://github.com/igrigorik/spdy-vpn",
+  "repository": "git://github.com/igrigorik/node-spdy-proxy",
+  "homepage": "https://github.com/igrigorik/node-spdy-proxy",
 
   "contributors": [],
   "devDependencies": {},
@@ -17,7 +17,7 @@
   },
 
   "main": "./lib/server.js",
-  "bin": { "spdyvpn": "./bin/spdyvpn" },
+  "bin": { "spdyproxy": "./bin/spdyproxy" },
 
   "engines": [
     "node >= 0.7.0"
