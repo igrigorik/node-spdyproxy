@@ -13,7 +13,8 @@
 
   "dependencies": {
     "spdy": "1.2.1",
-    "optimist": "*"
+    "optimist": "*",
+    "colors": "*"
   },
 
   "main": "./lib/server.js",

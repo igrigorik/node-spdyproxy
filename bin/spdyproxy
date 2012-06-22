@@ -3,10 +3,11 @@
 var path = require('path')
   , pkg = require('../package.json')
   , version = pkg.version
+  , colors = require('colors')
   , spdyProxy = require('../lib/server')
   , fs = require('fs')
   , opts = require('optimist')
-    .usage('Usage: $0 -x - y')
+    .usage('Usage: $0')
     .options({
       key: {
         demand: true,
@@ -38,6 +39,12 @@ var path = require('path')
         demand: false,
         alias: 'P',
         description: 'basic auth password'
+      },
+      verbose: {
+        demand: false,
+        alias: 'v',
+        description: 'enable verbose logging',
+        default: false
       }
     }).argv;
 
@@ -46,10 +53,13 @@ opts.cert = fs.readFileSync(path.resolve(opts.cert));
 opts.ca = fs.readFileSync(path.resolve(opts.ca));
 
 process.on('uncaughtException', function(e) {
-  console.error('Error: ' + e);
+  console.error('Error: '.red + e);
 });
 
 var proxy = new spdyProxy.createServer(opts);
 proxy.listen(opts.port);
 
-console.log("started server");
+console.log(
+  "Started SPDY proxy, port: ".green + opts.port
+  + (" (v. %s)").grey, version
+);
