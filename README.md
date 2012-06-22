@@ -1,16 +1,19 @@
 # SPDY Proxy
 
-Google Chrome supports SPDY/HTTPS as a forward proxy type, which allow us to use Chrome in a number of use cases where HTTP proxies could not have been used before. When using an HTTPS proxy in Chrome, instead of sending a `CONNECT` request in cleartext and then creating the SSL tunnel (hence leaking information about the site we're connecting to), the browser and the proxy first negotiate an SSL session, and then the browser sends the proxy request. Hence, all communication is always encrypted over SSL, and nobody can listen in on what your browser is requesting - [read more][spdy-vpn].
+Google Chrome supports SPDY/HTTPS as a forward proxy type, which allow us to use Chrome in a number of use cases where HTTP proxies could not have been used before. When using an HTTPS proxy in Chrome, instead of sending a `CONNECT` request in cleartext and then creating the SSL tunnel (hence leaking information about the site we're connecting to), the browser and the proxy first negotiate an SSL session, and then the browser sends the proxy request. Hence, all communication is always encrypted over SSL, and nobody can listen in on what your browser is requesting ([read more][spdy-vpn]). Use cases:
+
+* End-to-end secure browsing for *all* sites (HTTP, HTTPS, SPDY) - no sniffing!
+* Web VPN: secure access to internal servers and services without relying on heavy TCP VPN solutions
 
 Where does SPDY fit in here? When the SSL handshake is done, the browser and the server can agree to establish a SPDY session by using [SSL NPN][ssl-npn]. If both sides support SPDY, then all communication between browser and proxy can be done over SPDY:
 
 [IMG]
 
-* All browser <> proxy communication is done over SSL
-* SPDY Proxy and Chrome communicate via SPDY
+* All browser <-> proxy communication is done over SSL
+* SPDY Proxy and Chrome communicate via SPDY (v2)
 * Browser requests are routed via SPDY proxy to destination
 
-Notice that we can route both HTTP and HTTPS requests through the SPDY tunnel. To establish an HTTPS session, the browser sends a `CONNECT` request to the proxy with the hostname of the secure server (ex, https://google.com), the proxy establishes the TCP connection and then simply transfers the encrypted bytes between the streams - the proxy only knows that you wanted to connect to Google, but cannot see any of your actual traffic.
+Notice that we can route both HTTP and HTTPS requests through the SPDY tunnel. To establish an HTTPS session, the browser sends a `CONNECT` request to the proxy with the hostname of the secure server (ex, https://google.com), the proxy establishes the TCP connection and then simply transfers the encrypted bytes between the streams - the proxy only knows that you wanted to connect to Google, but cannot see any of your actual traffic - we're tunneling SSL over SSL!
 
 Same logic applies for tunelling SPDY! We can establish a SPDY v2 tunnel to the proxy, and then tunnel SPDY v3 connections over it.
 
@@ -57,7 +60,7 @@ The above file tells the browser to proxy all requests via a secure proxy on por
 
 ## DIY demo setup
 
-To do a quick local test, start the SPDY proxy on your machine, and start Chrome with the `--proxy-pac-url` file:
+To do a quick local test, start the SPDY proxy on your machine, and start Chrome with the `--proxy-pac-url` flag:
 
 ```bash
 $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300 -v
@@ -72,7 +75,7 @@ To run a secure (SPDY) proxy your will need a valid SSL certificate on the serve
 $> TODO
 ```
 
-Once the proxy server is running, it is accessible by any client that wants to use it. To restrict access, you can use regular firewall rules, IP blacklists, etc. Alternatively, SPDY proxy supports `Basic Auth` proxy authentication. Recall that all communication between client and server is done over SSL, hence all auth data is hidden! The first time your browser connects to the proxy, it will ask for a login and password. After that, the browser will automatically append the authentication headers.
+Once the proxy server is running, it is accessible by any client that wants to use it. To restrict access, you can use regular firewall rules, IP blacklists, etc. Alternatively, SPDY proxy supports `Basic-Auth` proxy authentication. Recall that all communication between client and server is done over SSL, hence all auth data is secure! The first time your browser connects to the proxy, it will ask for a login and password. After that, the browser will automatically append the authentication headers.
 
 
 ### Other resources
@@ -88,5 +91,6 @@ Once the proxy server is running, it is accessible by any client that wants to u
 [spdy-examples]: http://dev.chromium.org/spdy/spdy-proxy-examples
 
 
+### License
 
-
+(MIT License) - Copyright (c) 2012 Ilya Grigorik
