@@ -1,0 +1,25 @@
+{
+  "name": "spdy-vpn",
+  "description": "SPDY proxy",
+  "version": "0.1.0",
+  "author": "Ilya Grigorik <ilya@igvita.com> (igvita.com)",
+  "keywords": ["spdy", "proxy", "vpn", "chrome"],
+  "repository": "git://github.com/igrigorik/spdy-vpn",
+  "homepage": "https://github.com/igrigorik/spdy-vpn",
+
+  "contributors": [],
+  "devDependencies": {},
+  "scripts": {},
+
+  "dependencies": {
+    "spdy": "1.2.1",
+    "optimist": "*"
+  },
+
+  "main": "./lib/server.js",
+  "bin": { "spdyvpn": "./bin/spdyvpn" },
+
+  "engines": [
+    "node >= 0.7.0"
+  ]
+}
