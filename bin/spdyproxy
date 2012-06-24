@@ -48,6 +48,7 @@ var path = require('path')
       }
     }).argv;
 
+opts.version = version;
 opts.key = fs.readFileSync(path.resolve(opts.key));
 opts.cert = fs.readFileSync(path.resolve(opts.cert));
 if (opts.ca) opts.ca = fs.readFileSync(path.resolve(opts.ca));
