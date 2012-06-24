@@ -5,7 +5,7 @@ Google Chrome supports SPDY/HTTPS as a forward proxy type, which allow us to use
 * End-to-end secure browsing for *all* sites (HTTP, HTTPS, SPDY) - no sniffing!
 * Web VPN: secure access to internal servers and services without relying on heavy TCP VPN solutions
 
-Where does SPDY fit in here? When the SSL handshake is done, the browser and the server can agree to establish a SPDY session by using [SSL NPN][ssl-npn]. If both sides support SPDY, then all communication between browser and proxy can be done over SPDY:
+Where does SPDY fit in here? When the SSL handshake is done, the browser and the server can agree to establish a SPDY session by using [SSL NPN][npn] ([RFC][npn-rfc]). If both sides support SPDY, then all communication between browser and proxy can be done over SPDY:
 
 [IMG]
 
@@ -56,7 +56,7 @@ function FindProxyForURL(url, host) {
 }
 ```
 
-The above file tells the browser to proxy all requests via a secure proxy on port 8080, and if the proxy fails, then try to connect directly to the host. However, the PAC file allows us to create *much* more interesting scenarios: proxy specific URLs or hostnames, proxy rules based on DNS resolution results, and more. See PAC directory for examples.
+The above file tells the browser to proxy all requests via a secure proxy on port 8080, and if the proxy fails, then try to connect directly to the host. However, the PAC file allows us to create *much* more interesting scenarios: proxy specific URLs or hostnames, proxy rules based on DNS resolution results, and more. See [PAC directory](https://github.com/igrigorik/node-spdyproxy/tree/master/pac) for examples.
 
 ## DIY demo setup
 
@@ -64,12 +64,12 @@ To do a quick local test, start the SPDY proxy on your machine, and start Chrome
 
 ```bash
 $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300 -v
-$> "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome Canary" --proxy-pac-url=file:///path/to/config.pac --use-npn
+$> "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --proxy-pac-url=file:///path/to/config.pac --use-npn
 ```
 
 ## Securing the proxy
 
-To run a secure (SPDY) proxy your will need a valid SSL certificate on the server, and also make sure that your client will accept this certificate without any errors. If you're generating a self-signed certificate, then you will need to manually import it into your keychain on the client - otherwise, the browser will terminate the connection. If you don't have a set of existing certificates you can use, follow these steps:
+To run a secure (SPDY) proxy your will need a valid SSL certificate on the server, and also make sure that your client will accept this certificate without any errors. If you're generating a self-signed certificate, then you will need to manually import it into your client keychain - otherwise, the browser will terminate the connection. To create the certificates:
 
 ```bash
 $> TODO
@@ -77,6 +77,10 @@ $> TODO
 
 Once the proxy server is running, it is accessible by any client that wants to use it. To restrict access, you can use regular firewall rules, IP blacklists, etc. Alternatively, SPDY proxy supports `Basic-Auth` proxy authentication. Recall that all communication between client and server is done over SSL, hence all auth data is secure! The first time your browser connects to the proxy, it will ask for a login and password. After that, the browser will automatically append the authentication headers.
 
+```bash
+# pass in -U and -P flags to spdyproxy to set the Basic-Auth username and password
+$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300 -U user -P pass
+```
 
 ### Other resources
 
@@ -86,7 +90,8 @@ Once the proxy server is running, it is accessible by any client that wants to u
 
 
 [spdy-vpn]: http://www.igvita.com/2011/12/01/web-vpn-secure-proxies-with-spdy-chrome/
-[ssl-npn]: http://tools.ietf.org/html/draft-agl-tls-nextprotoneg-00
+[npn]: https://technotes.googlecode.com/git/nextprotoneg.html
+[npn-rfc]: http://tools.ietf.org/html/draft-agl-tls-nextprotoneg-00
 [pac]: http://en.wikipedia.org/wiki/Proxy_auto-config
 [spdy-examples]: http://dev.chromium.org/spdy/spdy-proxy-examples
 

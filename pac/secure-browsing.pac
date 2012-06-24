@@ -1,5 +1,5 @@
 //
-// Route all requests through local SPDY proxy
+// Route *all* requests through local SPDY proxy
 //
 
 function FindProxyForURL(url, host) {
