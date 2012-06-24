@@ -20,7 +20,7 @@ var path = require('path')
         description: 'path to SSL certificate'
       },
       ca: {
-        demand: true,
+        demand: false,
         alias: 'a',
         description: 'path to SSL CA certificate'
       },
@@ -50,7 +50,7 @@ var path = require('path')
 
 opts.key = fs.readFileSync(path.resolve(opts.key));
 opts.cert = fs.readFileSync(path.resolve(opts.cert));
-opts.ca = fs.readFileSync(path.resolve(opts.ca));
+if (opts.ca) opts.ca = fs.readFileSync(path.resolve(opts.ca));
 
 process.on('uncaughtException', function(e) {
   console.error('Error: '.red + e);
