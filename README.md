@@ -41,7 +41,7 @@ $> spdyproxy --help
 To run the proxy, you need to provide your SSL keys:
 
 ```bash
-$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300
+$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300
 ```
 
 With that, you should have a SPDY proxy running on port 44300.
@@ -63,23 +63,26 @@ The above file tells the browser to proxy all requests via a secure proxy on por
 To do a quick local test, start the SPDY proxy on your machine, and start Chrome with the `--proxy-pac-url` flag:
 
 ```bash
-$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300 -v
+$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -v
 $> "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --proxy-pac-url=file:///path/to/config.pac --use-npn
 ```
 
 ## Securing the proxy
 
-To run a secure (SPDY) proxy your will need a valid SSL certificate on the server, and also make sure that your client will accept this certificate without any errors. If you're generating a self-signed certificate, then you will need to manually import it into your client keychain - otherwise, the browser will terminate the connection. To create the certificates:
+To run a secure (SPDY) proxy your will need a valid SSL certificate on the server, and also make sure that your client will accept this certificate without any errors. If you're generating a self-signed certificate, then you will need to manually import it into your client keychain - otherwise, the browser will terminate the connection. To create a self-signed certificate:
 
 ```bash
-$> TODO
+$> openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.pem -out mycert.pem
+
+# on OSX, you now need to manually add mycert.pem to your keychain (for local testing)
+# -> lauch Keychain app, drag the key into the app, and mark it as accepted
 ```
 
 Once the proxy server is running, it is accessible by any client that wants to use it. To restrict access, you can use regular firewall rules, IP blacklists, etc. Alternatively, SPDY proxy supports `Basic-Auth` proxy authentication. Recall that all communication between client and server is done over SSL, hence all auth data is secure! The first time your browser connects to the proxy, it will ask for a login and password. After that, the browser will automatically append the authentication headers.
 
 ```bash
 # pass in -U and -P flags to spdyproxy to set the Basic-Auth username and password
-$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300 -U user -P pass
+$> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -U user -P pass
 ```
 
 ### Other resources
@@ -87,15 +90,17 @@ $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -a keys/mycsr.pem -p 44300 -U 
 * [Web VPN: Secure proxies with SPDY & Chrome][spdy-vpn]
 * [SPDY proxy examples on chromium.org][spdy-examples]
 * [PAC wikipedia page][pac]
+* [Creating an SSL Certificate Signing Request][csr]
+* [Creating a Self-Signed SSL Certificate][self-signed]
 
+### License
+
+(MIT License) - Copyright (c) 2012 Ilya Grigorik
 
 [spdy-vpn]: http://www.igvita.com/2011/12/01/web-vpn-secure-proxies-with-spdy-chrome/
 [npn]: https://technotes.googlecode.com/git/nextprotoneg.html
 [npn-rfc]: http://tools.ietf.org/html/draft-agl-tls-nextprotoneg-00
 [pac]: http://en.wikipedia.org/wiki/Proxy_auto-config
 [spdy-examples]: http://dev.chromium.org/spdy/spdy-proxy-examples
-
-
-### License
-
-(MIT License) - Copyright (c) 2012 Ilya Grigorik
+[csr]: https://devcenter.heroku.com/articles/csr)
+[self-signed]: https://devcenter.heroku.com/articles/ssl-certificate-self
