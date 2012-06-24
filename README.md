@@ -7,7 +7,7 @@ Google Chrome supports SPDY/HTTPS as a forward proxy type, which allow us to use
 
 Where does SPDY fit in here? When the SSL handshake is done, the browser and the server can agree to establish a SPDY session by using [SSL NPN][npn] ([RFC][npn-rfc]). If both sides support SPDY, then all communication between browser and proxy can be done over SPDY:
 
-![SPDY Proxy Diagram](http://www.igvita.com/posts/12/spdyproxy-diagram.png)
+![SPDY Proxy Diagram](http://www.igvita.com/posts/12/spdyproxy-diagram.png?akamai=bah)
 
 * All browser <-> proxy communication is done over SSL
 * SPDY Proxy and Chrome communicate via SPDY (v2)
