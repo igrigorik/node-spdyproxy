@@ -1,13 +1,13 @@
 # SPDY Proxy
 
-Google Chrome supports SPDY/HTTPS as a forward proxy type, which allow us to use Chrome in a number of use cases where HTTP proxies could not have been used before. When using an HTTPS proxy in Chrome, instead of sending a `CONNECT` request in cleartext and then creating the SSL tunnel (hence leaking information about the site we're connecting to), the browser and the proxy first negotiate an SSL session, and then the browser sends the proxy request. Hence, all communication is always encrypted over SSL, and nobody can listen in on what your browser is requesting ([read more][spdy-vpn]). Use cases:
+Google Chrome comes with built-in support for SSL-based proxies, which means that we can give Chrome an HTTPS proxy URL, and the rest is taken care of: a TLS tunnel is first established to the proxy, and the proxied requests are sent over a secure link. No eavesdropping allowed! This is a huge improvement over regular HTTP proxies, which can also tunnel SSL, but in the process leak information about the site we're connecting to - [read more about Chrome and secure proxies][chrome-secure]. This allow a number of new and interesting use cases:
 
 * End-to-end secure browsing for *all* sites (HTTP, HTTPS, SPDY) - no sniffing!
 * Web VPN: secure access to internal servers and services without relying on heavy TCP VPN solutions
 
 Where does SPDY fit in here? When the SSL handshake is done, the browser and the server can agree to establish a SPDY session by using [SSL NPN][npn] ([RFC][npn-rfc]). If both sides support SPDY, then all communication between browser and proxy can be done over SPDY:
 
-![SPDY Proxy Diagram](http://www.igvita.com/posts/12/spdyproxy-diagram.png?akamai=bah)
+![SPDY Proxy Diagram](http://www.igvita.com/posts/12/spdyproxy-diagram.png)
 
 * All browser <-> proxy communication is done over SSL
 * SPDY Proxy and Chrome communicate via SPDY (v2)
@@ -15,7 +15,7 @@ Where does SPDY fit in here? When the SSL handshake is done, the browser and the
 
 Notice that we can route both HTTP and HTTPS requests through the SPDY tunnel. To establish an HTTPS session, the browser sends a `CONNECT` request to the proxy with the hostname of the secure server (ex, https://google.com), the proxy establishes the TCP connection and then simply transfers the encrypted bytes between the streams - the proxy only knows that you wanted to connect to Google, but cannot see any of your actual traffic - we're tunneling SSL over SSL!
 
-Same logic applies for tunelling SPDY! We can establish a SPDY v2 tunnel to the proxy, and then tunnel SPDY v3 connections over it.
+Same logic applies for tunneling SPDY! We can establish a SPDY v2 tunnel to the proxy, and then tunnel SPDY v3 connections over it.
 
 ## Installation & Configuration
 
@@ -68,6 +68,8 @@ $> openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.pem -out my
 # -> lauch Keychain app, drag the key into the app, and mark it as accepted
 ```
 
+**Protip**: You can get a free, signed SSL certificate for your domain via [StartSSL](http://www.startssl.com/).
+
 Once the proxy server is running, it is accessible by any client that wants to use it. To restrict access, you can use regular firewall rules, IP blacklists, etc. Alternatively, SPDY proxy supports `Basic-Auth` proxy authentication. Recall that all communication between client and server is done over SSL, hence all auth data is secure! The first time your browser connects to the proxy, it will ask for a login and password. After that, the browser will automatically append the authentication headers.
 
 ```bash
@@ -77,6 +79,7 @@ $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -U user -P pass
 
 ### Other resources
 
+* [SPDY & Secure Proxy Support in Google Chrome][chrome-secure]
 * [Web VPN: Secure proxies with SPDY & Chrome][spdy-vpn]
 * [SPDY proxy examples on chromium.org][spdy-examples]
 * [Proxy Auto Configuration][pac]
@@ -87,6 +90,7 @@ $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -U user -P pass
 
 (MIT License) - Copyright (c) 2012 Ilya Grigorik
 
+[chrome-secure]: http://www.igvita.com/2012/06/25/spdy-and-secure-proxy-support-in-google-chrome/
 [spdy-vpn]: http://www.igvita.com/2011/12/01/web-vpn-secure-proxies-with-spdy-chrome/
 [npn]: https://technotes.googlecode.com/git/nextprotoneg.html
 [npn-rfc]: http://tools.ietf.org/html/draft-agl-tls-nextprotoneg-00
