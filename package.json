@@ -21,6 +21,6 @@
   "bin": { "spdyproxy": "./bin/spdyproxy" },
 
   "engines": [
-    "node >= 0.7.0"
+    "node >= 0.8.0"
   ]
 }

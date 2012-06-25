@@ -19,19 +19,7 @@ Same logic applies for tunelling SPDY! We can establish a SPDY v2 tunnel to the 
 
 ## Installation & Configuration
 
-SPDY proxy requires node.js 0.7.x+. To install:
-
-```bash
-$> git clone git://github.com/joyent/node.git && cd node
-$> ./configure --prefix=$HOME/.node/dev # <- or any other dir
-
-$> make install -j4 # in -jN, N is number of CPU cores on your machine
-
-# Add node's bin to PATH env variable
-$> echo 'export PATH=$HOME/.node/dev/bin:$PATH' >> ~/.bashrc
-```
-
-Once node.js is installed, you can use npm (node package manager) to install SPDY Proxy:
+SPDY proxy requires node.js 0.8.x+. Grab the [package for your platform](http://nodejs.org/) from the node site. Once node.js is installed, you can use npm (node package manager) to install SPDY Proxy:
 
 ```bash
 $> npm install -g spdyproxy
@@ -91,7 +79,7 @@ $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -U user -P pass
 
 * [Web VPN: Secure proxies with SPDY & Chrome][spdy-vpn]
 * [SPDY proxy examples on chromium.org][spdy-examples]
-* [PAC wikipedia page][pac]
+* [Proxy Auto Configuration][pac]
 * [Creating an SSL Certificate Signing Request][csr]
 * [Creating a Self-Signed SSL Certificate][self-signed]
 
