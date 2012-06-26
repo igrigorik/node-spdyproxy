@@ -96,5 +96,5 @@ $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -U user -P pass
 [npn-rfc]: http://tools.ietf.org/html/draft-agl-tls-nextprotoneg-00
 [pac]: http://en.wikipedia.org/wiki/Proxy_auto-config
 [spdy-examples]: http://dev.chromium.org/spdy/spdy-proxy-examples
-[csr]: https://devcenter.heroku.com/articles/csr)
+[csr]: https://devcenter.heroku.com/articles/csr
 [self-signed]: https://devcenter.heroku.com/articles/ssl-certificate-self
