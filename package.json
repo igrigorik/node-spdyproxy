@@ -1,7 +1,7 @@
 {
   "name": "spdyproxy",
   "description": "Fast, secure forward proxy: secure connection to proxy and ability to tunnel HTTP, HTTPS, and SPDY.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Ilya Grigorik <ilya@igvita.com> (http://www.igvita.com)",
   "keywords": ["spdy", "proxy", "vpn", "chrome"],
   "repository": "git://github.com/igrigorik/node-spdyproxy",
