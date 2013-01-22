@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+var auth = require('../lib/auth');
+var scriptname = require('path').basename(module.filename);
+var usage = 'Calculate PBKDF2_HMAC-SHA1 hash\n' +
+  '\n' +
+  scriptname + ' PASSWORD\n' +
+  '  Generate salt, then calculate hash\n' +
+  scriptname + ' PASSWORD SALT\n' +
+  '  Calculate hash using given SALT\n' +
+  scriptname + ' PASSWORD SALT HASH\n' +
+  '  Verify HASH against given PASSWORD and SALT\n' +
+  '\n' +
+  'Both salt and hash are ' + auth.SALTLEN * 2 + ' digit hex strings (= ' + auth.SALTLEN * 8 + ' bit = ' + auth.SALTLEN + ' byte)\n' +
+  'Number of iterations is ' + auth.ITERNUM + '\n' +
+  'If PASSWORD contains space, wrap it in double quotes:\n' +
+  '  ' + scriptname + ' "All Your Base"'
+
+if (process.argv.length <=2) {
+  console.log(usage);
+} else {
+  auth.calc(process.argv[2], process.argv[3], process.argv[4], onCalc);
+};
+
+function onCalc(err, res) {
+  if (err) return console.log(err);
+  if (res === true) return console.log('Hash confirmed');
+  if (process.argv[4] !== undefined) console.log('Given hash mismatches the calculated one:');
+  if (process.argv[3] === undefined) console.log('Salt: ' + res[0].toString('hex'));
+  console.log('Hash: ' + res[1].toString('hex'));
+};

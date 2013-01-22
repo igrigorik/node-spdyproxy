@@ -18,7 +18,10 @@
   },
 
   "main": "./lib/server.js",
-  "bin": { "spdyproxy": "./bin/spdyproxy" },
+  "bin": {
+    "spdyproxy": "./bin/spdyproxy",
+    "spdyproxy-pwd": "./bin/spdyproxy-pwd"
+  },
 
   "engines": [
     "node >= 0.8.0"
