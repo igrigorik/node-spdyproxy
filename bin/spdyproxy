@@ -30,15 +30,10 @@ var path = require('path')
         description: 'proxy port',
         default: 44300
       },
-      user: {
+      auth: {
         demand: false,
-        alias: 'U',
-        description: 'basic auth username'
-      },
-      pass: {
-        demand: false,
-        alias: 'P',
-        description: 'basic auth password'
+        alias: 'u',
+        description: 'path to basic auth database'
       },
       verbose: {
         demand: false,
@@ -52,6 +47,7 @@ opts.version = version;
 opts.key = fs.readFileSync(path.resolve(opts.key));
 opts.cert = fs.readFileSync(path.resolve(opts.cert));
 if (opts.ca) opts.ca = fs.readFileSync(path.resolve(opts.ca));
+if (opts.auth) opts.auth = require('../lib/auth').init(fs.readFileSync(path.resolve(opts.auth), 'utf-8'));
 
 process.on('uncaughtException', function(e) {
   console.error('Error: '.red + e);
@@ -61,6 +57,7 @@ var proxy = new spdyProxy.createServer(opts);
 proxy.listen(opts.port);
 
 console.log(
-  "Started SPDY proxy, port: ".green + opts.port
-  + (" (v. %s)").grey, version
+  'SPDY Proxy'.green + ' ' + 'v%s'.grey + ' listening on port ' + '%s'.yellow,
+  version,
+  opts.port
 );

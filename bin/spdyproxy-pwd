@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+
+var auth = require('../lib/auth');
+
+function usage() {
+  scriptname = require('path').basename(module.filename);
+  console.log('Calculate password hash for SPDY Proxy auth database\n' +
+    '\n' +
+    scriptname + ' PASSWORD\n' +
+    '  Generate salt, then calculate hash\n' +
+    scriptname + ' PASSWORD SALT\n' +
+    '  Calculate hash using given SALT\n' +
+    scriptname + ' PASSWORD SALT HASH\n' +
+    '  Verify HASH against given PASSWORD and SALT\n' +
+    '\n' +
+    'To enter PASSWORD interactively, use "*" as placeholder:\n' +
+    '  ' + scriptname + ' * 130ea18a8222c136 a6dc12fd95b72846\n' +
+    'If PASSWORD contains space, wrap it in double quotes:\n' +
+    '  ' + scriptname + ' "are belong to us"\n' +
+    'Both salt and hash should be ' + auth.SALTLEN * 2 + ' digit hex strings (= ' + auth.SALTLEN * 8 + ' bit = ' + auth.SALTLEN + ' byte)');
+  process.exit(2);
+};
+
+var pwd = process.argv[2]
+if (pwd === undefined) return usage();
+
+var salt = process.argv[3], hash = process.argv[4];
+var salthash = (salt === undefined) ? '' : (hash === undefined) ? salt : salt + '.' + hash; // allow both PASSWORD SALT HASH and PASSWORD SALT.HASH (auth db entry format)
+salthash = salthash.match(/^(?:((?:[0-9a-fA-F]{2})+)(?:\.((?:[0-9a-fA-F]{2})+))?)?$/);
+if (!salthash) return usage();
+
+if (pwd == '*') {
+  var read = require('read');
+  return readPwd();
+};
+calcHash();
+
+function readPwd() {
+  pwd = undefined;
+  read({prompt: 'Password:', silent: true}, onRead);
+
+  function onRead(err, input) {
+    if (err) return console.log(err);
+
+    if (pwd === undefined) {
+      pwd = input;
+      if (!salthash[2]) return read({prompt: 'Repeat:', silent: true}, onRead); // repeat pwd entry unless verifying given hash
+    } else if (pwd != input) {
+      console.log('Repeat mismatches password!');
+      return process.nextTick(readPwd);
+    };
+
+    console.log();
+    calcHash();
+  };
+};
+
+function calcHash() {
+  auth.calc(pwd, salthash[1], salthash[2], onCalc);
+
+  function onCalc(err, res) {
+    if (err) return console.log(err);
+
+    if (res === true) {
+      salt = hash = false;
+      salthash = salthash[0];
+    } else {
+      salt = res[0].toString('hex'), hash = res[1].toString('hex');
+      res = err = salthash[2]; // error if verifying given hash (but calc hasn't returned true)
+      salthash = salt + '.' + hash;
+    };
+
+    if (res) console.log(err ? 'Given hash mismatches the calculated one:' : 'Hash confirmed');
+    if (salt) console.log('Salt: %s\nHash: %s', salt, hash);
+    if (!err) console.log('\nEntry in SPDY Proxy auth database:\nUSERNAME:%s', salthash);
+  };
+};
