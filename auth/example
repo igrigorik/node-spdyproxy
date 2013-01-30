@@ -1,14 +1,13 @@
 : Database for HTTP Basic Auth in SPDY Proxy
 :
 : One user per line, as follows:
-: USERNAME SALT HASH
+: USERNAME:SALT.HASH
 :
-: USERNAME must not contain ":" (RFC 2617, sec. 2);
-: it may contain " ", but must not start or end with any.
+: USERNAME must neither contain ":" (RFC 2617, sec. 2) nor be empty;
 : SALT and HASH can be generated using spdyproxy-pwd or independantly:
 : HASH = PBKDF2_HMAC-SHA1(PASSWORD, SALT, iterations=1000, bitlength=64)
 :
 : Empty lines and lines starting with ":" are ignored.
 
 : Example for username "all your base" and password "are belong to us":
-: all your base 130ea18a8222c136 a6dc12fd95b72846
+: all your base:130ea18a8222c136.a6dc12fd95b72846
