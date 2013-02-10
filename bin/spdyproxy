@@ -69,9 +69,9 @@ opts.key = fs.readFileSync(path.resolve(opts.key));
 opts.cert = fs.readFileSync(path.resolve(opts.cert));
 if (opts.ca) opts.ca = fs.readFileSync(path.resolve(opts.ca));
 
-// process.on('uncaughtException', function(e) {
-//   console.error('Error: '.red + e);
-// });
+process.on('uncaughtException', function(e) {
+  console.error('Error: '.red + e);
+});
 
 var proxy = new spdyProxy.createServer(opts);
 
