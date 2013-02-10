@@ -12,11 +12,11 @@
   "scripts": {},
 
   "dependencies": {
-    "spdy": "~ 1.4.0",
-    "radius": "0.1.x",
-    "async": "*",
+    "spdy": ">= 1.3",
+    "radius": "~ 0.1",
     "optimist": "*",
-    "colors": "*"
+    "colors": "*",
+    "memory-cache": "*"
   },
 
   "main": "./lib/server.js",
