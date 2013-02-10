@@ -40,21 +40,28 @@ var path = require('path')
         alias: 'P',
         description: 'basic auth password'
       },
-      radius_host: {
+      'radius-server': {
         demand: false,
-        alias: 'R',
-        description: 'RADIUS Host'
+        description: 'RADIUS server hostname'
       },
-      radius_port: {
+      'radius-port': {
         demand: false,
-        default: 1812,
-        alias: 'P',
-        description: 'RADIUS Port'
+        description: 'RADIUS port for authentication',
+        default: 1812
       },
-      radius_secret: {
+      'radius-secret': {
         demand: false,
-        alias: 'S',
-        description: 'RADIUS Shared Secret'
+        description: 'secret shared by RADIUS and NAS'
+      },
+      'radius-nasid': {
+        demand: false,
+        description: 'RADIUS NAS-Identifier',
+        default: "spdyproxy"
+      },
+      'radius-creds-ttl': {
+        demand: false,
+        description: 'cache RADIUS user creds for X mins',
+        default: 120
       },
       verbose: {
         demand: false,
@@ -75,12 +82,12 @@ process.on('uncaughtException', function(e) {
 
 var proxy = new spdyProxy.createServer(opts);
 
-if(opts.radius_host) {
-  if(!opts.radius_secret) {
-    throw new Error('"radius_secret" must be specified.');
+if(opts['radius-server']) {
+  if(typeof opts['radius-secret'] !== 'string') {
+    throw new Error('"radius-secret" must be specified.');
     process.exit();
   }
-  proxy.auth(require('../lib/radius')(opts.radius_host, opts.radius_port, opts.radius_secret))
+  proxy.auth(require('../lib/radius')(opts))
 }
 
 proxy.listen(opts.port);
