@@ -12,7 +12,9 @@
   "scripts": {},
 
   "dependencies": {
-    "spdy": ">= 1.3.x",
+    "spdy": ">= 1.4.0",
+    "radius": "0.1.x",
+    "async": "*",
     "optimist": "*",
     "colors": "*"
   },

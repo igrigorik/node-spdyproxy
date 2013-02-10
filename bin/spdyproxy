@@ -40,6 +40,22 @@ var path = require('path')
         alias: 'P',
         description: 'basic auth password'
       },
+      radius_host: {
+        demand: false,
+        alias: 'R',
+        description: 'RADIUS Host'
+      },
+      radius_port: {
+        demand: false,
+        default: 1812,
+        alias: 'P',
+        description: 'RADIUS Port'
+      },
+      radius_secret: {
+        demand: false,
+        alias: 'S',
+        description: 'RADIUS Shared Secret'
+      },
       verbose: {
         demand: false,
         alias: 'v',
@@ -53,11 +69,20 @@ opts.key = fs.readFileSync(path.resolve(opts.key));
 opts.cert = fs.readFileSync(path.resolve(opts.cert));
 if (opts.ca) opts.ca = fs.readFileSync(path.resolve(opts.ca));
 
-process.on('uncaughtException', function(e) {
-  console.error('Error: '.red + e);
-});
+// process.on('uncaughtException', function(e) {
+//   console.error('Error: '.red + e);
+// });
 
 var proxy = new spdyProxy.createServer(opts);
+
+if(opts.radius_host) {
+  if(!opts.radius_secret) {
+    throw new Error('"radius_secret" must be specified.');
+    process.exit();
+  }
+  proxy.auth(require('../lib/radius')(opts.radius_host, opts.radius_port, opts.radius_secret))
+}
+
 proxy.listen(opts.port);
 
 console.log(
