@@ -12,9 +12,9 @@
   "scripts": {},
 
   "dependencies": {
-    "spdy": ">= 1.3",
+    "spdy": "~ 1.4",
     "radius": "~ 0.1",
-    "optimist": "*",
+    "optimist": "~ 0.3.5",
     "colors": "*",
     "memory-cache": "*"
   },
