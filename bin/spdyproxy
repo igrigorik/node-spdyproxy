@@ -82,22 +82,22 @@ process.on('uncaughtException', function(e) {
 
 var proxy = new spdyProxy.createServer(opts);
 
-// if (opts.user) {
-//   var CmdPwdHelper = require('../lib/cmdpwdhelper');
-//   cmdPwdHelper = new CmdPwdHelper(opts.user, opts.pass);
-//   proxy.setAuthHandler(cmdPwdHelper);
-// } else if (opts['radius-server']) {
-//   if (typeof opts['radius-secret'] !== 'string') {
-//     throw new Error('"radius-secret" must be specified.');
-//     process.exit();
-//   }
+if (opts.user) {
+  var CmdPwdHelper = require('../lib/cmdpwdhelper');
+  cmdPwdHelper = new CmdPwdHelper(opts.user, opts.pass);
+  proxy.setAuthHandler(cmdPwdHelper);
+} else if (opts['radius-server']) {
+  if (typeof opts['radius-secret'] !== 'string') {
+    throw new Error('"radius-secret" must be specified.');
+    process.exit();
+  }
 
-//   var RADIUSHelper = require('../lib/radiushelper');
-//   radiusHelper = new RADIUSHelper(opts['radius-server'], opts['radius-port'],
-//                                   opts['radius-secret'], opts['radius-nasid'],
-//                                   opts['radius-creds-ttl']);
-//   proxy.setAuthHandler(radiusHelper);
-// }
+  var RADIUSHelper = require('../lib/radiushelper');
+  radiusHelper = new RADIUSHelper(opts['radius-server'], opts['radius-port'],
+                                  opts['radius-secret'], opts['radius-nasid'],
+                                  opts['radius-creds-ttl'], opts.verbose);
+  proxy.setAuthHandler(radiusHelper);
+}
 
 proxy.listen(opts.port);
 
