@@ -77,6 +77,28 @@ Once the proxy server is running, it is accessible by any client that wants to u
 $> spdyproxy -k keys/mykey.pem -c keys/mycert.pem -p 44300 -U user -P pass
 ```
 
+### Two way SSL authentication
+SPDY proxy server authenticate client by SSL certificate.
+
+```bash
+#generate key and CSR for client
+openssl req -out client1.csr -new -newkey rsa:2048 -nodes -keyout client1.pem
+#sign client CSR using server's key, use -CAserial mycert.srl if serial file alreday exists otherwise use -CAcreateserial
+openssl x509 -req -in client1.csr -CA mycert.pem -CAkey mykey.pem -CAcreateserial -out client1.cer
+#export client certificate to pfx file so that it can be imported into client's browsers manually
+openssl pkcs12 -export -out client1.pfx -inkey client1.pem -in client1.cer
+
+```
+
+Now run the SPDY proxy server as
+
+```bash
+#use -C and -a to validate client certificate
+spdyproxy  -k keys/mykey.pem -c keys/mycert.pem -p 44300  -a keys/mycert.pem -C
+```
+
+To use the proxy server, a client certificate must be presented.
+
 ### Other resources
 
 * [SPDY & Secure Proxy Support in Google Chrome][chrome-secure]
