@@ -76,7 +76,7 @@ var path = require('path')
         demand:false,
         alias: 'C',
         description: 'request a certificate from a connecting client',
-		type: 'boolean',
+        type: 'boolean',
         default: false
       }
     }).argv;
