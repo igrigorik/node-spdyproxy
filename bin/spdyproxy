@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// uncomment to obtain useful stack traces on exceptions
+// require("long-stack-traces");
+
 var path = require('path')
   , pkg = require('../package.json')
   , version = pkg.version
