@@ -91,7 +91,11 @@ openssl pkcs12 -export -out client1.pfx -inkey client1.pem -in client1.cer
 ```
 
 Now run the SPDY proxy server as
+
+```bash
+#use -C and -a to validate client certificate
 spdyproxy  -k keys/mykey.pem -c keys/mycert.pem -p 44300  -a keys/mycert.pem -C
+```
 
 To use the proxy server, a client certificate must be presented.
 
