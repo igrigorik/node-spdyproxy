@@ -78,6 +78,11 @@ var path = require('path')
         description: 'request a certificate from a connecting client',
         type: 'boolean',
         default: false
+      },
+      logFile:{
+        demand:false,
+        alias: 'L',
+        description: 'save request logs to a specific file'
       }
     }).argv;
 
@@ -108,6 +113,12 @@ if (opts.user) {
                                   opts['radius-secret'], opts['radius-nasid'],
                                   opts['radius-creds-ttl'], opts.verbose);
   proxy.setAuthHandler(radiusHelper);
+}
+
+if (opts.logFile) {
+  var LoggingHelper = require('../lib/logginghelper');
+  loggingHelper = new LoggingHelper(opts.logFile);
+  proxy.setLogHandler(loggingHelper);
 }
 
 proxy.listen(opts.port);
