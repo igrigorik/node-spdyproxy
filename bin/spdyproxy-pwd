@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var auth = require('../lib/auth');
+var auth = require('../lib/authdbhelper');
 
 function usage() {
   scriptname = require('path').basename(module.filename);

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// uncomment to obtain useful stack traces on exceptions
+// require("long-stack-traces");
+
 var path = require('path')
   , pkg = require('../package.json')
   , version = pkg.version
@@ -30,16 +33,61 @@ var path = require('path')
         description: 'proxy port',
         default: 44300
       },
-      auth: {
+      user: {
+        demand: false,
+        alias: 'U',
+        description: 'basic auth username'
+      },
+      pass: {
+        demand: false,
+        alias: 'P',
+        description: 'basic auth password'
+      },
+      authdb: {
         demand: false,
         alias: 'u',
         description: 'path to basic auth database'
+      },
+      'radius-server': {
+        demand: false,
+        description: 'RADIUS server hostname'
+      },
+      'radius-port': {
+        demand: false,
+        description: 'RADIUS port for authentication',
+        default: 1812
+      },
+      'radius-secret': {
+        demand: false,
+        description: 'secret shared by RADIUS and NAS'
+      },
+      'radius-nasid': {
+        demand: false,
+        description: 'RADIUS NAS-Identifier',
+        default: "spdyproxy"
+      },
+      'radius-creds-ttl': {
+        demand: false,
+        description: 'cache RADIUS user creds for X mins',
+        default: 120
       },
       verbose: {
         demand: false,
         alias: 'v',
         description: 'enable verbose logging',
         default: false
+      },
+      requestCert:{
+        demand:false,
+        alias: 'C',
+        description: 'request a certificate from a connecting client',
+        type: 'boolean',
+        default: false
+      },
+      logFile:{
+        demand:false,
+        alias: 'L',
+        description: 'save request logs to a specific file'
       }
     }).argv;
 
@@ -47,17 +95,44 @@ opts.version = version;
 opts.key = fs.readFileSync(path.resolve(opts.key));
 opts.cert = fs.readFileSync(path.resolve(opts.cert));
 if (opts.ca) opts.ca = fs.readFileSync(path.resolve(opts.ca));
-if (opts.auth) opts.auth = require('../lib/auth').init(fs.readFileSync(path.resolve(opts.auth), 'utf-8'));
+if (opts.requestCert) opts.rejectUnauthorized=true;
 
 process.on('uncaughtException', function(e) {
   console.error('Error: '.red + e);
 });
 
 var proxy = new spdyProxy.createServer(opts);
+
+if (opts.user) {
+  var CmdPwdHelper = require('../lib/cmdpwdhelper');
+  cmdPwdHelper = new CmdPwdHelper(opts.user, opts.pass);
+  proxy.setAuthHandler(cmdPwdHelper);
+} else if (opts.authdb) {
+  var AuthDBHelper = require('../lib/authdbhelper');
+  authDBHelper = new AuthDBHelper(fs.readFileSync(path.resolve(opts.authdb), 'utf-8'));
+  proxy.setAuthHandler(authDBHelper);
+} else if (opts['radius-server']) {
+  if (typeof opts['radius-secret'] !== 'string') {
+    throw new Error('"radius-secret" must be specified.');
+    process.exit();
+  }
+
+  var RADIUSHelper = require('../lib/radiushelper');
+  radiusHelper = new RADIUSHelper(opts['radius-server'], opts['radius-port'],
+                                  opts['radius-secret'], opts['radius-nasid'],
+                                  opts['radius-creds-ttl'], opts.verbose);
+  proxy.setAuthHandler(radiusHelper);
+}
+
+if (opts.logFile) {
+  var LoggingHelper = require('../lib/logginghelper');
+  loggingHelper = new LoggingHelper(opts.logFile);
+  proxy.setLogHandler(loggingHelper);
+}
+
 proxy.listen(opts.port);
 
 console.log(
-  'SPDY Proxy'.green + ' ' + 'v%s'.grey + ' listening on port ' + '%s'.yellow,
-  version,
-  opts.port
+  "Started SPDY proxy, port: ".green + opts.port
+  + (" (v. %s)").grey, version
 );
