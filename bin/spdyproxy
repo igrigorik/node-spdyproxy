@@ -79,6 +79,11 @@ var path = require('path')
         type: 'boolean',
         default: false
       },
+      localAddress:{
+        demand:false,
+        alias: 'B',
+        description: 'Local interface to bind for network connections.',
+      },
       logFile:{
         demand:false,
         alias: 'L',
