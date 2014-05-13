@@ -12,11 +12,15 @@
   "scripts": {},
 
   "dependencies": {
-    "spdy": "~ 1.14.4",
+    "spdy": "~ 1.26.0",
     "radius": "~ 0.1",
     "optimist": "~ 0.3.5",
     "colors": "*",
     "memory-cache": "*"
+  },
+
+  "scripts": {
+    "test": "mocha --reporter spec"
   },
 
   "main": "./lib/server.js",
