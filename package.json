@@ -12,7 +12,7 @@
   "scripts": {},
 
   "dependencies": {
-    "spdy": "~ 1.26.0",
+    "spdy": "~ 1.29.0",
     "radius": "~ 0.1",
     "optimist": "~ 0.3.5",
     "colors": "*",
