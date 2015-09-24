@@ -99,6 +99,7 @@ if (opts.requestCert) opts.rejectUnauthorized=true;
 
 process.on('uncaughtException', function(e) {
   console.error('Error: '.red + e);
+  console.error(e.stack);
 });
 
 var proxy = new spdyProxy.createServer(opts);
