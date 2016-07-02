@@ -6,11 +6,8 @@
   "keywords": ["spdy", "proxy", "vpn", "chrome"],
   "repository": "git://github.com/igrigorik/node-spdyproxy",
   "homepage": "https://github.com/igrigorik/node-spdyproxy",
-
   "contributors": [],
   "devDependencies": {},
-  "scripts": {},
-
   "dependencies": {
     "spdy": "~ 2.0.5",
     "radius": "~ 1.1.1",
@@ -18,14 +15,11 @@
     "colors": "*",
     "memory-cache": "*"
   },
-
   "scripts": {
     "test": "mocha --reporter spec"
   },
-
   "main": "./lib/server.js",
   "bin": { "spdyproxy": "./bin/spdyproxy" },
-
   "engines": [
     "node >= 4.0.0"
   ]
