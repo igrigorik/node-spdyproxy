@@ -111,8 +111,8 @@ if (opts.user) {
 } else if (opts['radius-server']) {
   if (typeof opts['radius-secret'] !== 'string') {
     throw new Error('"radius-secret" must be specified.');
-    process.exit();
   }
+  process.exit();
 
   var RADIUSHelper = require('../lib/radiushelper');
   radiusHelper = new RADIUSHelper(opts['radius-server'], opts['radius-port'],
